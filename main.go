@@ -1,6 +1,8 @@
 package main
 
 import (
+	"net/http"
+
 	"github.com/gin-gonic/gin"
 )
 
@@ -13,10 +15,11 @@ func main() {
 	// ещё раз. Из-за этого вывод HTML-страниц такой быстрый.
 	router.LoadHTMLGlob("templates/*")
 
+	// // Инициализируем роуты
+	// initializeRoutes()
 
-	// Инициализируем роуты
-	initializeRoutes()
-
+	// определение роута главной страницы
+	router.GET("/", showIndexPage)
 
 	// // За­да­ём об­ра­бот­чик ро­у­тов
 	// router.GET("/", func(c *gin.Context) {
@@ -35,4 +38,24 @@ func main() {
 
 	// За­пуск при­ло­же­ния (При­ло­же­ние за­пу­стит­ся на localhost и 8080 пор­те, по-умол­ча­нию.)
 	router.Run()
+}
+
+func showIndexPage(c *gin.Context) {
+	// Получает список топиков
+	articles := getAllArticles()
+
+	// Обрабатывает шаблон index.html, передавая ему список топиков
+	c.HTML(
+		// Set the HTTP status to 200 (OK)
+		http.StatusOK,
+
+		// Use the index.html template
+		"index.html",
+
+		// Pass the data that the page uses
+		gin.H{
+			"title":   "Home Page",
+			"payload": articles,
+		},
+	)
 }
